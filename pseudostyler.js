@@ -1,6 +1,8 @@
 class PseudoStyler {
   constructor(parseCSS = null) {
     this.styles = [];
+    this.defaultStyles = new WeakMap();
+    this.pseudoMap = new WeakMap();
     if (!parseCSS) {
     	parseCSS = DefaultParser.parseCSS
     }
@@ -49,20 +51,64 @@ class PseudoStyler {
     }
   }
 
-  forceStyle(element, pseudoclass) {
-  	let matchedStyle = {};
-    for (let style of this.styles) {
-      if (style.selectorText.includes(pseudoclass)) {
-        if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
-          matchedStyle = Object.assign(matchedStyle, style.style);
-        }
+  register(element) {
+    if (!this.defaultStyles.has(element) && !this.pseudoMap.has(element)) {
+      this.defaultStyles.set(element, getComputedStyle(element));
+      this.pseudoMap.set(element, new Map());
+    }
+  }
+
+  setDefaultStyle(element) {
+    if (this.defaultStyles.has(element)) {
+      element.style = this.defaultStyles.get(element);
+      if (this.pseudoMap.has(element)) {
+      	this.pseudoMap.delete(element);
+        this.defaultStyles.delete(element);
       }
     }
+  }
 
-    delete matchedStyle['cssText'];
+  deleteStyle(element, pseudoclass) {
+    if (this.pseudoMap.has(element)) {
+      const defaultStyle = this.defaultStyles.get(element);
+      const pseudo = this.pseudoMap.get(element);
+      if (pseudo.has(pseudoclass)) {
+        const style = pseudo.get(pseudoclass);
+        for (let key of Object.keys(style)) {
+          if (defaultStyle && key in defaultStyle) {
+            element.style[key] = defaultStyle[key];
+          } else {
+            delete element.style[key];
+          }
+        }
+        pseudo.delete(pseudoclass);
+      }
+    }
+  }
 
-    for (let key of Object.keys(matchedStyle)) {
-      element.style[key] = matchedStyle[key];
+  toggleStyle(element, pseudoclass) {
+    this.register(element);
+
+    if (this.pseudoMap.get(element).has(pseudoclass)) {
+      this.deleteStyle(element, pseudoclass);
+    } else {
+    	let matchedStyle = {};
+
+      for (let style of this.styles) {
+        if (style.selectorText.includes(pseudoclass)) {
+          if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
+            matchedStyle = Object.assign(matchedStyle, style.style);
+          }
+        }
+      }
+
+      delete matchedStyle['cssText'];
+
+      this.pseudoMap.get(element).set(pseudoclass, matchedStyle);
+
+      for (let key of Object.keys(matchedStyle)) {
+        element.style[key] = matchedStyle[key];
+      }
     }
   }
 }
