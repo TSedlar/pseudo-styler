@@ -4,11 +4,13 @@
 [![](https://img.shields.io/badge/donate-patreon-orange.svg)](https://www.patreon.com/bePatron?c=954360)
 [![](https://img.shields.io/badge/donate-paypal-blue.svg)](https://paypal.me/TSedlar)
 
+[![](https://data.jsdelivr.com/v1/package/gh/TSedlar/pseudo-styler/badge)](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
+
 Allows for forcing an element to be styled with a pseudo-class
 
 ### Retrieving
 
-JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.1/pseudostyler.js)
+JSDelivr kindly hosts this script [here](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
 
 ### Example usage:
 
