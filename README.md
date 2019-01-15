@@ -35,4 +35,4 @@ The default one should work fine, but can be overridden.
 
 #### Thanks:
 
-A large thanks goes to [Jason Miller](https://jsfiddle.net/developit/vzkckrw4/?fbclid=IwAR1xYJzsEcpglQ5KsqQG4DHJMAgpyMJaXV9dKkd_t47n465n2dzv23cduqw), as the CSS parser he in his JSFiddle is the default parser used by this project.
+A large thanks goes to [Jason Miller](https://jsfiddle.net/developit/vzkckrw4/?fbclid=IwAR1xYJzsEcpglQ5KsqQG4DHJMAgpyMJaXV9dKkd_t47n465n2dzv23cduqw), as the CSS parser in his JSFiddle is the default parser used by this project.
