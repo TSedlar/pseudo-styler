@@ -12,7 +12,7 @@ JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pse
 
 ### Example usage:
 
-[JSFiddle](https://jsfiddle.net/sedarity/08rwosb5/)
+[codepen](https://codepen.io/tsedlar/pen/EGrBqm)
 
 ```javascript
 (async () => {
@@ -33,3 +33,5 @@ The default one should work fine, but can be overridden.
 #### Thanks:
 
 A large thanks goes to [Jason Miller](https://jsfiddle.net/developit/vzkckrw4/?fbclid=IwAR1xYJzsEcpglQ5KsqQG4DHJMAgpyMJaXV9dKkd_t47n465n2dzv23cduqw), as the CSS parser in his JSFiddle is the default parser used by this project.
+
+Additional thanks goes to [Finn Thompson](https://github.com/FThompson) for the idea of the project and helping to polish the code and fix bugs for cross-browser compatibility.
