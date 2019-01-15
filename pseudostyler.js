@@ -57,7 +57,10 @@ class PseudoStyler {
       if (style.selectorText.includes(pseudoclass)) {
         if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
           let newSelector = this._getCustomSelector(style.selectorText, pseudoclass);
-          customClasses[newSelector] = style.style.cssText;
+          customClasses[newSelector] = [];
+          Object.keys(style.style).filter(key => key !== 'cssText').forEach(key => {
+            customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;')
+          });
         }
       }
     }
@@ -66,8 +69,8 @@ class PseudoStyler {
       this._createStyleElement();
     }
     for (let selector in customClasses) {
-      let _class = selector + ' { ' + customClasses[selector] + ' }'
-      this.style.prepend(document.createTextNode(_class))
+      let _class = selector + ' { ' + customClasses[selector].join('') + ' }'
+      this.style.append(document.createTextNode(_class))
     }
     this.registered.get(element).set(pseudoclass, true)
   }
