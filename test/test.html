@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            #test {
+                width: 100px;
+                height: 100px;
+                background: red;
+            }
+            
+            #test:hover {
+                background: blue;
+                border: 2px solid red;
+            }
+
+            .yellow:hover {
+                background: yellow;
+            }
+            
+            #button {
+                width: 100px;
+            }
+        </style>
+        <script src='../pseudostyler.js' type='text/javascript'></script>
+    </head>
+    <body>
+        <div id="test" class="yellow"></div>
+        <button id="button">Click</button>
+        <script type='text/javascript'>
+            (async () => {
+                let styler = new PseudoStyler();
+                await styler.loadDocumentStyles();
+                document.getElementById('button').addEventListener('click', () => {
+                    const element = document.querySelector('#test');
+                    styler.toggleStyle(element, ':hover');
+                })
+            })();
+        </script>
+    </body>
+</html>

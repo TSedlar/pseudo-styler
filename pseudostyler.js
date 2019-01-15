@@ -1,10 +1,9 @@
 class PseudoStyler {
   constructor(parseCSS = null) {
     this.styles = [];
-    this.defaultStyles = new WeakMap();
-    this.pseudoMap = new WeakMap();
+    this.registered = new WeakMap()
     if (!parseCSS) {
-    	parseCSS = DefaultParser.parseCSS
+    	parseCSS = DefaultParser.parseCSS;
     }
     this.parseCSS = parseCSS;
   }
@@ -15,8 +14,9 @@ class PseudoStyler {
         await this.addLink(sheet.href);
       } else {
         try {
-          if (sheet.ownerNode && sheet.ownerNode.nodeName && sheet.ownerNode.nodeName === "STYLE") {
-            this.addCSS(sheet.ownerNode.firstChild.textContent)
+          if (sheet.ownerNode && sheet.ownerNode.nodeName && 
+              sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
+            this.addCSS(sheet.ownerNode.firstChild.textContent);
           }
         } catch (_) {
           console.log('failed to load style sheet (CORS):');
@@ -51,65 +51,54 @@ class PseudoStyler {
     }
   }
 
-  register(element) {
-    if (!this.defaultStyles.has(element) && !this.pseudoMap.has(element)) {
-      this.defaultStyles.set(element, getComputedStyle(element));
-      this.pseudoMap.set(element, new Map());
-    }
-  }
-
-  setDefaultStyle(element) {
-    if (this.defaultStyles.has(element)) {
-      element.style = this.defaultStyles.get(element);
-      if (this.pseudoMap.has(element)) {
-      	this.pseudoMap.delete(element);
-        this.defaultStyles.delete(element);
-      }
-    }
-  }
-
-  deleteStyle(element, pseudoclass) {
-    if (this.pseudoMap.has(element)) {
-      const defaultStyle = this.defaultStyles.get(element);
-      const pseudo = this.pseudoMap.get(element);
-      if (pseudo.has(pseudoclass)) {
-        const style = pseudo.get(pseudoclass);
-        for (let key of Object.keys(style)) {
-          if (defaultStyle && key in defaultStyle) {
-            element.style[key] = defaultStyle[key];
-          } else {
-            delete element.style[key];
-          }
+  register(element, pseudoclass) {
+    let customClasses = {};
+    for (let style of this.styles) {
+      if (style.selectorText.includes(pseudoclass)) {
+        if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
+          let newSelector = this._getCustomSelector(style.selectorText, pseudoclass);
+          customClasses[newSelector] = [];
+          Object.keys(style.style).filter(key => key !== 'cssText').forEach(key => {
+            customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;')
+          });
         }
-        pseudo.delete(pseudoclass);
       }
     }
+
+    if (!this.style) {
+      this._createStyleElement();
+    }
+    for (let selector in customClasses) {
+      let _class = selector + ' { ' + customClasses[selector].join('') + ' }'
+      this.style.append(document.createTextNode(_class))
+    }
+    this.registered.get(element).set(pseudoclass, true)
   }
 
   toggleStyle(element, pseudoclass) {
-    this.register(element);
-
-    if (this.pseudoMap.get(element).has(pseudoclass)) {
-      this.deleteStyle(element, pseudoclass);
-    } else {
-    	let matchedStyle = {};
-
-      for (let style of this.styles) {
-        if (style.selectorText.includes(pseudoclass)) {
-          if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
-            matchedStyle = Object.assign(matchedStyle, style.style);
-          }
-        }
-      }
-
-      delete matchedStyle['cssText'];
-
-      this.pseudoMap.get(element).set(pseudoclass, matchedStyle);
-
-      for (let key of Object.keys(matchedStyle)) {
-        element.style[key] = matchedStyle[key];
-      }
+    if (!this.registered.has(element)) {
+      this.registered.set(element, new Map())
     }
+    if (!this.registered.get(element).get(pseudoclass)) {
+      this.register(element, pseudoclass)
+    }
+    element.classList.toggle(this._getMimicClassName(pseudoclass).substr(1));
+  }
+
+  _getMimicClassName(pseudoClass) {
+    return pseudoClass.replace(':', '.') + '-pseudostyler';
+  }
+
+  _getCustomSelector(selectorText, pseudoClass) {
+    return selectorText.replace(pseudoClass, this._getMimicClassName(pseudoClass));
+  }
+
+  _createStyleElement() {
+    let style = document.createElement('style');
+    style.type = 'text/css';
+    style.rel = 'stylesheet';
+    document.head.appendChild(style);
+    this.style = style;
   }
 }
 
