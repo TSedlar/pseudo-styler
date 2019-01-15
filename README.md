@@ -6,6 +6,10 @@
 
 Allows for forcing an element to be styled with a pseudo-class
 
+### Retrieving
+
+JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.0/pseudostyler.js)
+
 ### Example usage: 
 
 [JSFiddle](https://jsfiddle.net/sedarity/08rwosb5/)
@@ -13,10 +17,14 @@ Allows for forcing an element to be styled with a pseudo-class
 ```javascript
 (async () => {
   let styler = new PseudoStyler();
-	await styler.loadDocumentStyles();
+  await styler.loadDocumentStyles();
 
+  const button = document.querySelector("#button");
   const element = document.querySelector('#test');
-  styler.forceStyle(element, ':hover');
+  
+  button.onclick = () => {
+    styler.toggleStyle(element, ':hover');
+  }
 })();
 ```
 
