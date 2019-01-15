@@ -8,7 +8,7 @@ Allows for forcing an element to be styled with a pseudo-class
 
 ### Retrieving
 
-JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.0/pseudostyler.js)
+JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.1/pseudostyler.js)
 
 ### Example usage:
 
