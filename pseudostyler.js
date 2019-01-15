@@ -7,13 +7,34 @@ class PseudoStyler {
     this.parseCSS = parseCSS;
   }
 
+  async loadDocumentStyles() {
+    for (let sheet of document.styleSheets) {
+      if (sheet.href) {
+        await this.addLink(sheet.href);
+      } else {
+        try {
+          if (sheet.ownerNode && sheet.ownerNode.nodeName && sheet.ownerNode.nodeName === "STYLE") {
+            this.addCSS(sheet.ownerNode.firstChild.textContent)
+          }
+        } catch (_) {
+          console.log('failed to load style sheet (CORS):');
+          console.log(sheet);
+        }
+      }
+    }
+  }
+
+  addCSS(css) {
+  	this.styles.push(...this.parseCSS(css));
+  }
+
   async addLink(url) {
   	const self = this;
   	await new Promise((resolve, reject) => {
       fetch(url)
         .then(res => res.text())
         .then(res => {
-          self.styles.push(...self.parseCSS(res))
+        	self.addCSS(res);
           resolve(self.styles)
         })
         .catch(err => reject(err));
