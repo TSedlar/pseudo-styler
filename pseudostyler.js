@@ -1,7 +1,7 @@
 class PseudoStyler {
   constructor(parseCSS = null) {
     this.styles = [];
-    this.registered = new WeakMap()
+    this.registered = new WeakMap();
     if (!parseCSS) {
     	parseCSS = DefaultParser.parseCSS;
     }
@@ -14,7 +14,7 @@ class PseudoStyler {
         await this.addLink(sheet.href);
       } else {
         try {
-          if (sheet.ownerNode && sheet.ownerNode.nodeName && 
+          if (sheet.ownerNode && sheet.ownerNode.nodeName &&
               sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
             this.addCSS(sheet.ownerNode.firstChild.textContent);
           }
@@ -59,7 +59,7 @@ class PseudoStyler {
           let newSelector = this._getCustomSelector(style.selectorText, pseudoclass);
           customClasses[newSelector] = [];
           Object.keys(style.style).filter(key => key !== 'cssText').forEach(key => {
-            customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;')
+            customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;');
           });
         }
       }
@@ -69,18 +69,18 @@ class PseudoStyler {
       this._createStyleElement();
     }
     for (let selector in customClasses) {
-      let _class = selector + ' { ' + customClasses[selector].join('') + ' }'
-      this.style.append(document.createTextNode(_class))
+      let _class = selector + ' { ' + customClasses[selector].join('') + ' }';
+      this.style.append(document.createTextNode(_class));
     }
-    this.registered.get(element).set(pseudoclass, true)
+    this.registered.get(element).set(pseudoclass, true);
   }
 
   toggleStyle(element, pseudoclass) {
     if (!this.registered.has(element)) {
-      this.registered.set(element, new Map())
+      this.registered.set(element, new Map());
     }
     if (!this.registered.get(element).get(pseudoclass)) {
-      this.register(element, pseudoclass)
+      this.register(element, pseudoclass);
     }
     element.classList.toggle(this._getMimicClassName(pseudoclass).substr(1));
   }

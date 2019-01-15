@@ -10,7 +10,7 @@ Allows for forcing an element to be styled with a pseudo-class
 
 JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.0/pseudostyler.js)
 
-### Example usage: 
+### Example usage:
 
 [JSFiddle](https://jsfiddle.net/sedarity/08rwosb5/)
 
@@ -18,18 +18,15 @@ JSDelivr kindly hosts this script [here](https://cdn.jsdelivr.net/gh/TSedlar/pse
 (async () => {
   let styler = new PseudoStyler();
   await styler.loadDocumentStyles();
-
-  const button = document.querySelector("#button");
-  const element = document.querySelector('#test');
-  
-  button.onclick = () => {
+  document.getElementById('button').addEventListener('click', () => {
+    const element = document.querySelector('#test');
     styler.toggleStyle(element, ':hover');
-  }
+  })
 })();
 ```
 
 ### Explanation:
-This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a css parser. 
+This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a css parser.
 
 The default one should work fine, but can be overridden.
 
