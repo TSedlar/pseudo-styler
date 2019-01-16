@@ -13,7 +13,7 @@ Allows for forcing an element to be styled with a pseudo-class
 JSDelivr kindly hosts this script [here](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
 
 ```html
-<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.2/pseudostyler.js'>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.3/pseudostyler.js'>
 ```
 
 ### Example usage:
