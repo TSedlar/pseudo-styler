@@ -58,7 +58,7 @@
         document.querySelectorAll('.remove').forEach(button => {
           button.addEventListener('click', () => {
             let tester = button.parentNode.firstElementChild;
-            styler.deregister(tester, ':hover')
+            styler.deregister(tester, ':hover');
           });
         });
       })();

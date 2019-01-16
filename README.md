@@ -6,7 +6,7 @@
 
 [![](https://data.jsdelivr.com/v1/package/gh/TSedlar/pseudo-styler/badge)](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
 
-Allows for forcing an element to be styled with a pseudo-class
+Allows for forcing an element to be styled with a pseudo-class.
 
 ### Retrieving
 
@@ -27,14 +27,49 @@ JSDelivr kindly hosts this script [here](https://www.jsdelivr.com/package/gh/TSe
   document.getElementById('button').addEventListener('click', () => {
     const element = document.querySelector('#test');
     styler.toggleStyle(element, ':hover');
-  })
+  });
 })();
 ```
 
 ### Explanation:
-This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a css parser.
+This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a hidden stylesheet to be parsed.
 
-The default one should work fine, but can be overridden.
+### Methods:
+```javascript
+toggleStyle(element, pseudoClass)
+```
+
+Applies a pseudo class to an element.
+
+```javascript
+async loadDocumentStyles()
+```
+
+Asynchronously loads all styles from the current document to be parsed for pseudo class rules.
+
+```javascript
+register(element, pseudoClass)
+```
+
+Finds any applicable CSS pseudo class rules for the element and adds them to a separate style sheet. This method is called automatically by `toggleStyle`.
+
+```javascript
+deregister(element, pseudoClass)
+```
+
+Removes the element's mimicked pseudo class from the styler's stylesheet. This method can be useful to clear the mimicked rules in case the element's style has changed.
+
+```javascript
+addCSS(text)
+```
+
+Adds CSS to this style sheet's rules that are checked for pseudo classes.
+
+```javascript
+async addLink(url)
+```
+
+Fetches the CSS resource and adds its CSS to the styler.
 
 #### Thanks:
 
