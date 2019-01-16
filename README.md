@@ -6,7 +6,7 @@
 
 [![](https://data.jsdelivr.com/v1/package/gh/TSedlar/pseudo-styler/badge)](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
 
-Allows for forcing an element to be styled with a pseudo-class
+Allows for forcing an element to be styled with a pseudo-class.
 
 ### Retrieving
 
@@ -27,14 +27,12 @@ JSDelivr kindly hosts this script [here](https://www.jsdelivr.com/package/gh/TSe
   document.getElementById('button').addEventListener('click', () => {
     const element = document.querySelector('#test');
     styler.toggleStyle(element, ':hover');
-  })
+  });
 })();
 ```
 
 ### Explanation:
-This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a css parser.
-
-The default one should work fine, but can be overridden.
+This script will grab all of the stylesheets in the current document, obtain their href links, and pass the CSS sources into a hidden stylesheet to be parsed.
 
 #### Thanks:
 
