@@ -26,7 +26,7 @@ class PseudoStyler {
     copySheet.textContent = text;
     document.head.appendChild(copySheet);
     for (let i = 0; i < copySheet.sheet.cssRules.length; i++) {
-      if (copySheet.sheet.cssRules[i].selectorText) {
+      if (copySheet.sheet.cssRules[i].selectorText && copySheet.sheet.cssRules[i].selectorText.includes(':')) {
         this.styles.push(copySheet.sheet.cssRules[i]);
       }
     }
