@@ -2,7 +2,7 @@ class PseudoStyler {
   constructor() {
     this.styles = [];
     this.registered = new WeakMap();
-    this.uniqueID = 0
+    this.uniqueID = 0;
   }
 
   async loadDocumentStyles() {
@@ -13,7 +13,7 @@ class PseudoStyler {
         await this.addLink(sheet.href);
       } else {
         if (sheet.ownerNode && sheet.ownerNode.nodeName &&
-            sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
+          sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
           this.addCSS(sheet.ownerNode.firstChild.textContent);
         }
       }
@@ -22,7 +22,7 @@ class PseudoStyler {
 
   addCSS(text) {
     let copySheet = document.createElement('style');
-    copySheet.type = 'text/css'
+    copySheet.type = 'text/css';
     copySheet.textContent = text;
     document.head.appendChild(copySheet);
     for (let i = 0; i < copySheet.sheet.cssRules.length; i++) {
@@ -30,16 +30,16 @@ class PseudoStyler {
         this.styles.push(copySheet.sheet.cssRules[i]);
       }
     }
-    document.head.removeChild(copySheet)
+    document.head.removeChild(copySheet);
   }
 
   async addLink(url) {
-  	const self = this;
-  	await new Promise((resolve, reject) => {
+    const self = this;
+    await new Promise((resolve, reject) => {
       fetch(url)
         .then(res => res.text())
         .then(res => {
-        	self.addCSS(res);
+          self.addCSS(res);
           resolve(self.styles);
         })
         .catch(err => reject(err));
@@ -52,11 +52,11 @@ class PseudoStyler {
     for (let style of this.styles) {
       if (style.selectorText.includes(pseudoclass)) {
         style.selectorText.split(/\s*,\s*/g)
-            .filter(selector => element.matches(selector.replace(new RegExp(pseudoclass, 'g'), '')))
-            .forEach(selector => {
-          let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
-          customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).map(rule => rule + ' !important').join(';');
-        })
+          .filter(selector => element.matches(selector.replace(new RegExp(pseudoclass, 'g'), '')))
+          .forEach(selector => {
+            let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
+            customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).map(rule => rule + ' !important').join(';');
+          });
       }
     }
 
@@ -65,7 +65,7 @@ class PseudoStyler {
     }
     for (let selector in customClasses) {
       let cssClass = selector + ' { ' + customClasses[selector] + ' }';
-      this.style.sheet.insertRule(cssClass)
+      this.style.sheet.insertRule(cssClass);
     }
     this.registered.get(element).set(pseudoclass, uuid);
   }
