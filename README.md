@@ -13,7 +13,7 @@ Allows for forcing an element to be styled with a pseudo-class
 JSDelivr kindly hosts this script [here](https://www.jsdelivr.com/package/gh/TSedlar/pseudo-styler)
 
 ```html
-<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.3/pseudostyler.js'>
+<script type='text/javascript' src='https://cdn.jsdelivr.net/gh/TSedlar/pseudo-styler@1.0.4/pseudostyler.js'>
 ```
 
 ### Example usage:
@@ -38,6 +38,4 @@ The default one should work fine, but can be overridden.
 
 #### Thanks:
 
-A large thanks goes to [Jason Miller](https://jsfiddle.net/developit/vzkckrw4/?fbclid=IwAR1xYJzsEcpglQ5KsqQG4DHJMAgpyMJaXV9dKkd_t47n465n2dzv23cduqw), as the CSS parser in his JSFiddle is the default parser used by this project.
-
-Additional thanks goes to [Finn Thompson](https://github.com/FThompson) for the idea of the project and helping to polish the code and fix bugs for cross-browser compatibility.
+Thanks goes to [Finn Thompson](https://github.com/FThompson) for the idea of the project and helping to polish the code and fix bugs for cross-browser compatibility.
