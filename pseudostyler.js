@@ -1,34 +1,36 @@
 class PseudoStyler {
-  constructor(parseCSS = null) {
+  constructor() {
     this.styles = [];
     this.registered = new WeakMap();
-    if (!parseCSS) {
-    	parseCSS = DefaultParser.parseCSS;
-    }
-    this.parseCSS = parseCSS;
     this.uniqueID = 0
   }
 
   async loadDocumentStyles() {
-    for (let sheet of document.styleSheets) {
+    let count = document.styleSheets.length;
+    for (let i = 0; i < count; i++) {
+      let sheet = document.styleSheets[i];
       if (sheet.href) {
         await this.addLink(sheet.href);
       } else {
-        try {
-          if (sheet.ownerNode && sheet.ownerNode.nodeName &&
-              sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
-            this.addCSS(sheet.ownerNode.firstChild.textContent);
-          }
-        } catch (_) {
-          console.log('failed to load style sheet (CORS):');
-          console.log(sheet);
+        if (sheet.ownerNode && sheet.ownerNode.nodeName &&
+            sheet.ownerNode.nodeName === "STYLE" && sheet.ownerNode.firstChild) {
+          this.addCSS(sheet.ownerNode.firstChild.textContent);
         }
       }
     }
   }
 
-  addCSS(css) {
-  	this.styles.push(...this.parseCSS(css));
+  addCSS(text) {
+    let copySheet = document.createElement('style');
+    copySheet.type = 'text/css'
+    copySheet.textContent = text;
+    document.head.appendChild(copySheet);
+    for (let i = 0; i < copySheet.sheet.cssRules.length; i++) {
+      if (copySheet.sheet.cssRules[i].selectorText) {
+        this.styles.push(copySheet.sheet.cssRules[i]);
+      }
+    }
+    document.head.removeChild(copySheet)
   }
 
   async addLink(url) {
@@ -38,18 +40,10 @@ class PseudoStyler {
         .then(res => res.text())
         .then(res => {
         	self.addCSS(res);
-          resolve(self.styles)
+          resolve(self.styles);
         })
         .catch(err => reject(err));
     });
-  }
-
-  _checkSelector(element, selector) {
-  	try {
-    	return element.matches(selector);
-    } catch (_) {
-    	return false; // ignore malformed css
-    }
   }
 
   register(element, pseudoclass) {
@@ -58,13 +52,10 @@ class PseudoStyler {
     for (let style of this.styles) {
       if (style.selectorText.includes(pseudoclass)) {
         style.selectorText.split(/\s*,\s*/g)
-            .filter(selector => this._checkSelector(element, selector.replace(new RegExp(pseudoclass, 'g'), '')))
+            .filter(selector => element.matches(selector.replace(new RegExp(pseudoclass, 'g'), '')))
             .forEach(selector => {
           let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
-          customClasses[newSelector] = [];
-          Object.keys(style.style).filter(key => key !== 'cssText').forEach(key => {
-            customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;');
-          });
+          customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).map(rule => rule + ' !important').join(';');
         })
       }
     }
@@ -73,7 +64,7 @@ class PseudoStyler {
       this._createStyleElement();
     }
     for (let selector in customClasses) {
-      let cssClass = selector + ' { ' + customClasses[selector].join('') + ' }';
+      let cssClass = selector + ' { ' + customClasses[selector] + ' }';
       this.style.sheet.insertRule(cssClass)
     }
     this.registered.get(element).set(pseudoclass, uuid);
@@ -116,48 +107,7 @@ class PseudoStyler {
   _createStyleElement() {
     let style = document.createElement('style');
     style.type = 'text/css';
-    style.rel = 'stylesheet';
     document.head.appendChild(style);
     this.style = style;
-  }
-}
-
-const DefaultParser = {
-	parseRule: (css) => {
-    let tokenizer = /\s*([a-z\-]+)\s*:\s*((?:[^;]*url\(.*?\)[^;]*|[^;]*)*)\s*(?:;|$)/gi;
-    let obj = {};
-    let token;
-    while ((token = tokenizer.exec(css))) {
-      obj[token[1].toLowerCase()] = token[2];
-    }
-    return obj;
-  },
-
-  stringifyRule: (style) => {
-    let text = '';
-    let keys = Object.keys(style).sort();
-    for (let i = 0; i < keys.length; i++) {
-    	text += ` ${keys[i]}: ${style[keys[i]]};`
-    }
-    return text.substring(1);
-  },
-
-  parseCSS: (text) => {
-    let tokenizer = /([\s\S]+?)\{([\s\S]*?)\}/gi;
-    let rules = []; 
-    let rule;
-    let token;
-    text = text.replace(/\/\*[\s\S]*?\*\//g, '');
-    while ((token = tokenizer.exec(text))) {
-      let style = DefaultParser.parseRule(token[2].trim());
-      style.cssText = DefaultParser.stringifyRule(style);
-      rule = {
-        selectorText: token[1].trim().replace(/\s*\,\s*/, ', ').replace(/^\}/, ''),
-        style: style
-      };
-      rule.cssText = rule.selectorText + ' { ' + rule.style.cssText + ' }';
-      rules.push(rule);
-    }
-    return rules;
   }
 }
