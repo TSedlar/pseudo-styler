@@ -6,6 +6,7 @@ class PseudoStyler {
     	parseCSS = DefaultParser.parseCSS;
     }
     this.parseCSS = parseCSS;
+    this.uniqueID = 0
   }
 
   async loadDocumentStyles() {
@@ -47,21 +48,24 @@ class PseudoStyler {
   	try {
     	return element.matches(selector);
     } catch (_) {
-    	return false;
+    	return false; // ignore malformed css
     }
   }
 
   register(element, pseudoclass) {
+    let uuid = this.uniqueID++;
     let customClasses = {};
     for (let style of this.styles) {
       if (style.selectorText.includes(pseudoclass)) {
-        if (this._checkSelector(element, style.selectorText.replace(new RegExp(pseudoclass, 'g'), ''))) {
-          let newSelector = this._getCustomSelector(style.selectorText, pseudoclass);
+        style.selectorText.split(/\s*,\s*/g)
+            .filter(selector => this._checkSelector(element, selector.replace(new RegExp(pseudoclass, 'g'), '')))
+            .forEach(selector => {
+          let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
           customClasses[newSelector] = [];
           Object.keys(style.style).filter(key => key !== 'cssText').forEach(key => {
             customClasses[newSelector].push(key + ':' + style.style[key] + ' !important;');
           });
-        }
+        })
       }
     }
 
@@ -72,25 +76,32 @@ class PseudoStyler {
       let _class = selector + ' { ' + customClasses[selector].join('') + ' }';
       this.style.append(document.createTextNode(_class));
     }
-    this.registered.get(element).set(pseudoclass, true);
+    this.registered.get(element).set(pseudoclass, uuid);
+  }
+
+  deregister(element, pseudoClass) {
+    if (this.registered.has(element) && this.registered.get(element).has(pseudoClass)) {
+      this.registered.get(element).delete(pseudoClass);
+    }
   }
 
   toggleStyle(element, pseudoclass) {
     if (!this.registered.has(element)) {
       this.registered.set(element, new Map());
     }
-    if (!this.registered.get(element).get(pseudoclass)) {
+    if (!this.registered.get(element).has(pseudoclass)) {
       this.register(element, pseudoclass);
     }
-    element.classList.toggle(this._getMimicClassName(pseudoclass).substr(1));
+    let uuid = this.registered.get(element).get(pseudoclass);
+    element.classList.toggle(this._getMimicClassName(pseudoclass, uuid).substr(1));
   }
 
-  _getMimicClassName(pseudoClass) {
-    return pseudoClass.replace(':', '.') + '-pseudostyler';
+  _getMimicClassName(pseudoClass, uuid) {
+    return pseudoClass.replace(':', '.') + '-pseudostyler-' + uuid;
   }
 
-  _getCustomSelector(selectorText, pseudoClass) {
-    return selectorText.replace(pseudoClass, this._getMimicClassName(pseudoClass));
+  _getCustomSelector(selectorText, pseudoClass, uuid) {
+    return selectorText.replace(new RegExp(pseudoClass, 'g'), this._getMimicClassName(pseudoClass, uuid));
   }
 
   _createStyleElement() {
@@ -124,7 +135,7 @@ const DefaultParser = {
 
   parseCSS: (text) => {
     let tokenizer = /([\s\S]+?)\{([\s\S]*?)\}/gi;
-    let rules = [];
+    let rules = []; 
     let rule;
     let token;
     text = text.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -132,7 +143,7 @@ const DefaultParser = {
       let style = DefaultParser.parseRule(token[2].trim());
       style.cssText = DefaultParser.stringifyRule(style);
       rule = {
-        selectorText: token[1].trim().replace(/\s*\,\s*/, ', '),
+        selectorText: token[1].trim().replace(/\s*\,\s*/, ', ').replace(/^\}/, ''),
         style: style
       };
       rule.cssText = rule.selectorText + ' { ' + rule.style.cssText + ' }';
