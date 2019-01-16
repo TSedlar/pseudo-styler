@@ -19,8 +19,9 @@
         background: yellow;
       }
 
-      .button {
+      .button, .remove {
         width: 100px;
+        display: block;
       }
 
       #unused:hover, #test2:hover, #test2 > a:hover, div > span.unused:hover {
@@ -32,11 +33,13 @@
   <body>
     <div>
       <div id='test1' class='test'></div>
-      <button id='button1' class='button'>Click</button>
+      <button class='button'>Click</button>
+      <button class='remove'>Destyle</button>
     </div>
     <div>
       <div id='test2' class='test'></div>
-      <button id='button2' class='button'>Click</button>
+      <button class='button'>Click</button>
+      <button class='remove'>Destyle</button>
     </div>
     <script type='text/javascript'>
       (async () => {
@@ -44,10 +47,16 @@
         await styler.loadDocumentStyles();
         document.querySelectorAll('.button').forEach(button => {
           button.addEventListener('click', () => {
-            let tester = button.previousElementSibling;
+            let tester = button.parentNode.firstElementChild;
             styler.toggleStyle(tester, ':hover');
-          })
-        })
+          });
+        });
+        document.querySelectorAll('.remove').forEach(button => {
+          button.addEventListener('click', () => {
+            let tester = button.parentNode.firstElementChild;
+            styler.deregister(tester, ':hover')
+          });
+        });
       })();
     </script>
   </body>

@@ -73,15 +73,24 @@ class PseudoStyler {
       this._createStyleElement();
     }
     for (let selector in customClasses) {
-      let _class = selector + ' { ' + customClasses[selector].join('') + ' }';
-      this.style.append(document.createTextNode(_class));
+      let cssClass = selector + ' { ' + customClasses[selector].join('') + ' }';
+      this.style.sheet.insertRule(cssClass)
     }
     this.registered.get(element).set(pseudoclass, uuid);
   }
 
   deregister(element, pseudoClass) {
     if (this.registered.has(element) && this.registered.get(element).has(pseudoClass)) {
+      let uuid = this.registered.get(element).get(pseudoClass);
+      let className = this._getMimicClassName(pseudoClass, uuid);
+      let regex = new RegExp(className + '($|\\W)');
+      for (let i = 0; i < this.style.sheet.cssRules.length; i++) {
+        if (regex.test(this.style.sheet.cssRules[i].selectorText)) {
+          this.style.sheet.deleteRule(i);
+        }
+      }
       this.registered.get(element).delete(pseudoClass);
+      element.classList.remove(className.substr(1));
     }
   }
 
