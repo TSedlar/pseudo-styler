@@ -85,7 +85,7 @@ class PseudoStyler {
     }
   }
 
-  toggleStyle(element, pseudoclass) {
+  toggleStyle(element, pseudoclass, force) {
     if (!this.registered.has(element)) {
       this.registered.set(element, new Map());
     }
@@ -93,7 +93,7 @@ class PseudoStyler {
       this.register(element, pseudoclass);
     }
     let uuid = this.registered.get(element).get(pseudoclass);
-    element.classList.toggle(this._getMimicClassName(pseudoclass, uuid).substr(1));
+    element.classList.toggle(this._getMimicClassName(pseudoclass, uuid).substr(1), force);
   }
 
   _getMimicClassName(pseudoClass, uuid) {

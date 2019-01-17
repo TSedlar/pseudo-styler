@@ -19,7 +19,7 @@
         background: yellow;
       }
 
-      .button, .remove {
+      .button, .remove, .off {
         width: 100px;
         display: block;
       }
@@ -37,13 +37,15 @@
   <body>
     <div>
       <div id='test1' class='test'></div>
-      <button class='button'>Click</button>
-      <button class='remove'>Destyle</button>
+      <button class='button'>Toggle</button>
+      <button class='off'>Toggle off</button>
+      <button class='remove'>Deregister</button>
     </div>
     <div>
       <div id='test2' class='test'></div>
-      <button class='button'>Click</button>
-      <button class='remove'>Destyle</button>
+      <button class='button'>Toggle</button>
+      <button class='off'>Toggle off</button>
+      <button class='remove'>Deregister</button>
     </div>
     <script type='text/javascript'>
       (async () => {
@@ -53,6 +55,12 @@
           button.addEventListener('click', () => {
             let tester = button.parentNode.firstElementChild;
             styler.toggleStyle(tester, ':hover');
+          });
+        });
+        document.querySelectorAll('.off').forEach(button => {
+          button.addEventListener('click', () => {
+            let tester = button.parentNode.firstElementChild;
+            styler.deregister(tester, ':hover', false);
           });
         });
         document.querySelectorAll('.remove').forEach(button => {

@@ -36,10 +36,10 @@ This script will grab all of the stylesheets in the current document, obtain the
 
 ### Methods:
 ```javascript
-toggleStyle(element, pseudoClass)
+toggleStyle(element, pseudoClass[, force])
 ```
 
-Applies a pseudo class to an element.
+Toggles a pseudo class on an element. If the optional `force` parameter is specified, then if `true`, toggle the pseudo class on; if `false`, toggle the pseudo class off.
 
 ```javascript
 async loadDocumentStyles()
