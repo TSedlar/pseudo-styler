@@ -48,10 +48,13 @@ class PseudoStyler {
 
   matches(element, selector, pseudoClass) {
     selector = selector.replace(new RegExp(pseudoClass, 'g'), '');
-    let compressed = selector.replace(/ *([^\w#:. ]) */g, '$1'); // remove extra spaces
-    for (let part of compressed.split(/ +/)) {
-      if (element.matches(part)) {
-        return true;
+    for (let part of selector.split(/ +/)) {
+      try {
+        if (element.matches(part)) {
+          return true;
+        }
+      } catch (ignored) {
+        // reached a non-selector part such as '>'
       }
     }
     return false;
