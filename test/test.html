@@ -19,6 +19,18 @@
         background: yellow;
       }
 
+      #child-test {
+        width: 100px;
+      }
+
+      #child-test .test {
+        background: orange;
+      }
+
+      #child-test:hover > .test {
+        background: cyan;
+      }
+
       .button, .remove, .off {
         width: 100px;
         display: block;
@@ -43,6 +55,14 @@
     </div>
     <div>
       <div id='test2' class='test'></div>
+      <button class='button'>Toggle</button>
+      <button class='off'>Toggle off</button>
+      <button class='remove'>Deregister</button>
+    </div>
+    <div>
+      <a id='child-test'>
+        <div class='test'></div>
+      </a>
       <button class='button'>Toggle</button>
       <button class='off'>Toggle off</button>
       <button class='remove'>Deregister</button>

@@ -46,13 +46,27 @@ class PseudoStyler {
     });
   }
 
+  matches(element, selector, pseudoClass) {
+    selector = selector.replace(new RegExp(pseudoClass, 'g'), '');
+    for (let part of selector.split(/ +/)) {
+      try {
+        if (element.matches(part)) {
+          return true;
+        }
+      } catch (ignored) {
+        // reached a non-selector part such as '>'
+      }
+    }
+    return false;
+  }
+
   register(element, pseudoclass) {
     let uuid = this.uniqueID++;
     let customClasses = {};
     for (let style of this.styles) {
       if (style.selectorText.includes(pseudoclass)) {
         style.selectorText.split(/\s*,\s*/g)
-          .filter(selector => element.matches(selector.replace(new RegExp(pseudoclass, 'g'), '')))
+          .filter(selector => this.matches(element, selector, pseudoclass))
           .forEach(selector => {
             let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
             customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).map(rule => rule + ' !important').join(';');
