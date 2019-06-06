@@ -69,7 +69,7 @@ class PseudoStyler {
           .filter(selector => this.matches(element, selector, pseudoclass))
           .forEach(selector => {
             let newSelector = this._getCustomSelector(selector, pseudoclass, uuid);
-            customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).map(rule => rule + ' !important').join(';');
+            customClasses[newSelector] = style.style.cssText.split(/\s*;\s*/).join(';');
           });
       }
     }
